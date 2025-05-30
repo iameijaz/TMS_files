@@ -1,0 +1,69 @@
+############ 4.09000014545435 Lattice Constat
+# creation of an Al crystal
+#@auth: A. Prakash
+#@date: Mon Nov 12 15:51:00 CET 2018
+#@mail: arun.prakash@imfd.tu-freiberg.de
+#############################
+# type of the structure
+structure      fcc
+
+# Min. and max. multipliers for the linear 
+# combination of the (rotated) fcc vectors
+lower           -600
+upper            600
+
+# Epsilon added to prevent rounding errors 
+epsilon         1.0e-6 ###
+
+# Outfile name
+outfile        Cu_Ag.fcc # Al_SX.fcc # CuAg Cu_Ag
+
+# Starting value for atom numbering
+startnr         2000000
+
+# element / structure informations
+mass            63.546 # 
+lattice_const   4.09000014545435 # 
+
+#Orientation of the crystal
+new_x           -2  1  1
+new_y            1  1  1
+new_z            0  1 -1
+
+## n_x=19.96, n_y=28.22, n_z=34.56
+##L_x = 190.349854681170569 Å --> 190
+## L_y = 198.354465536948908 Å --> 198
+##L_z = 196.660544977522108 Å --> 196
+
+
+# Boxdimensions, no atom should be sitting on the
+# planes (rounding errors!) ## Rounded off to an integer value for the count of atoms
+box_x           190 #991.9 # 992.043345827187 (200 units)
+box_y           198 #280.0 # 280.592230826158 (40 units)
+box_z           196 #28.0  # 28.6378246380552 (10 units)
+
+# header output
+header          1
+boxX            190.349854681170569  0.0  0.0#992.043345827187  0.0  0.0
+boxY            0.0  198.354465536948908  0.0 #0.0  280.592230826158  0.0
+boxZ            0.0  0.0  196.660544977522108#0.0  0.0  28.6378246380552
+
+# normal vector of cutting plane (1 -3 3) 
+#cut_norm1      4.242640687122000 0.577350269190000 -0.816496580928000
+#cut_norm2       1.0 0.0 0.0
+
+# distance plane - 0
+#plane_distance1 286.4  # 2.8637824638055167   * 100 = 286.378246380552
+#plane_distance2 572.75  # 2.8637824638055167   * 200 = 572.756492761103
+
+# which part to cut away: 
+# > 0 :  cut away if on the other side as 0
+# < 0 :  cut away if on the same side as 0 
+# = 0 : don't cut away anything
+#cutdir1         -1
+#cutdir2         1
+
+# rotation vectors [1 1 1]
+#axis2           0.0 1.0 0.0
+#angle2          1.04719755119660
+

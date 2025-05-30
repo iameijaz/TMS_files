@@ -1,0 +1,21 @@
+Total # of neighbors = 324677
+Ave neighs/atom = 81.189547
+Neighbor list builds = 1
+Dangerous builds = 0
+Total energy (eV) = -11396.0473768424;
+Number of atoms = 3999;
+Total wall time: 0:01:33
+
+
+
+
+Total # of neighbors = 46710
+Ave neighs/atom = 93.42
+Neighbor list builds = 0
+Dangerous builds = 0
+Total energy (eV) = -1424.99998736056
+Number of atoms = 500
+Lattice constant (Angstoms) = 4.09000014545435
+Cohesive energy (eV) = -2.84999997472111
+Total wall time: 0:00:00
+

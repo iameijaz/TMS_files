@@ -1,0 +1,58 @@
+# Lego parameter file for creating a cuboidal sample ...
+# ... which will be later cut into rhombohedral shape using awk
+# @author: Jo Möller, A. Prakash
+# @date: Sun Sep 23 13:36:44 CEST 2018
+#
+
+# orientation
+new_x		1 1 0
+new_y		-1 1 1
+
+# Crystal structure
+structure 	fcc
+
+# Min. and max. multipliers for the linear 
+# combination of the (rotated) fcc vectors
+lower		-200
+upper		200
+
+# Epsilon added to prevent rounding errors 
+epsilon		1.0e-6  
+
+# Outfile name
+outfile         output_SingleBulkCrystal.fcc
+
+# Starting value for atom numbering
+startnr         1
+
+
+# element / structure informations
+mass            63.546 # 
+lattice_const   4.09000014545435 # 
+
+# Boxdimensions, no atom should be sitting on the
+# planes (rounding errors!)
+box_x           505.2 #505.2
+box_y           107.0 #107.0
+box_z           219.8 #219.8
+
+# Definition of cutting plane 1:
+cutdir1         -1					# cut away if on the same side as 0
+cut_norm1       0.0 -0.33333333333333 0.942809041582063	# normal vector of cutting plane
+plane_distance1 1					# first cutting plane should go almost through origin
+
+#Header info
+header		1
+boxX	505.273861583993 0.0  0.0 
+boxY    0.0  120.0  0.0  
+boxZ    0.0  0.0  160.0
+
+# Definition of cutting plane 2:
+cutdir2         1					# cut away if on the other side as 0
+cut_norm2       0.0 -0.33333333333333 0.942809041582063	# normal vector of cutting plane
+plane_distance2 110					# 
+
+# Explanation for which part to cut away: 
+# > 0 :  cut away if on the other side as 0
+# < 0 :  cut away if on the same side as 0 
+# = 0 : don't cut away anything

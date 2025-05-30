@@ -1,0 +1,46 @@
+#LEGO confparam file for testing insertion of a dislocation using odcreator
+#@auth: A. Prakash
+#@date: Thu Oct 11 18:21:51 CEST 2018
+#@mail: arun.prakash@imfd.tu-freiberg.de
+#
+# Crystal structure
+structure       fcc
+new_x           1  0  0
+new_y           0  1  0
+new_z           0  0  1
+
+#new_x           -2  1  1
+#new_y            1  1  1
+#new_z            0  1 -1
+
+
+
+# Min. and max. multipliers for the linear 
+# combination of the (rotated) fcc vectors
+lower           -500
+upper           500
+
+# Epsilon added to prevent rounding errors 
+epsilon         1.0e-6  
+
+# Outfile name
+outfile         Al_x100_y010_forDislocInsert.fcc
+
+# Starting value for atom numbering
+startnr         1
+
+# element / structure information
+mass            26.9815
+lattice_const   4.05
+
+#Box Dimensions
+box_x           40.0
+box_y           40.0
+box_z           40.0
+
+# header output
+header          1
+boxX            40.5  0.0  0.0
+boxY            0.0  40.5  0.0
+boxZ            0.0   0.0 40.5
+

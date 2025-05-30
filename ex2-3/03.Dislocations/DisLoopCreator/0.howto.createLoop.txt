@@ -1,0 +1,33 @@
+# A simple howto detailing how to create a dislocation loop using DisLoopCreator
+# @auth: A. Prakash
+# @date: Wed Nov 14 20:38:22 CET 2018
+# @mail: arun.prakash@imfd.tu-freiberg.de
+#
+# First generate a sample of interest where you would like to introduce a loop
+# Here, we generate a single crystal for Al using LEGO
+# Have a look at the *.legoparam file - Are there any parameters that you do not understand?
+legoV3.1 Al_x110_y1-12.legoparam 
+
+# Now we run the dislocation loop creator (disLoopCreator) ...
+# ... using the input file loop_SX_Al.inp
+# Take a look at this file - do you understand all the parameters?
+# A few points have been pre-selected for the exercise. Try to substitute a few points 
+# You can us OVITO to find a few points of interest 
+# CAREFUL: ALl points must lie on the same plane! - use cutting planes and narrow down your search!
+
+disLoopCreatorArun loop_SX-Al.inp 
+
+# Now view your structures (with and without dislocation loop)
+# Verify that the loop is inserted in the right place...
+# ... by opening the structure in ovito. Perform a "Common Neighbor Analysis" and remove all fcc atoms ...
+# ... by choosing "Select Particle Type" > FCC, and then using "Delete Selected Particles"
+#
+# Food for thought:
+# 1. Why do we have a defect at the center of the loop?
+# 2. Why is the loop not smooth?
+# 3. Where is the stacking fault?
+#
+# Now play around with the tool by ... 
+# 1. choosing a larger box and a larger loop size
+# 2. choosing a different plane for inserting the dislocation
+# 

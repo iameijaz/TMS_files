@@ -1,0 +1,41 @@
+#  _ _  ___  _ _ _  ___  ___ 
+# | | || . || | | ||_ _|| . |
+# |   || | || | | | | | | | |
+# |_|_|`___'|__/_/  |_| `___'
+# 
+# "Shape a hexagonal nano wire from a bulk single crystal"
+# Created by Arun Prakash, Mon Apr 21 16:17:58 CEST 2025
+
+# have a look in the parameter file for LEGO:
+SingleCrystalBulk_x01-1_y-111.legoparam
+# Change ??? to appropriate values
+# Ensure that the length in X is roughly 500 angstroms, and in 125 angstroms in Y and Z
+# The structure has to be periodic in X; periodicity in Y and Z is not a necessity
+# Compute the right box sizes for this purpose
+#
+# Parameters to be changed
+#	outfile: Name of the output file (Provide a reasonable name with relevant details in the name itself)
+#	mass: atomic mass of the element in use
+#	latice_const: Lattice constant of the interatomic potential assigned to you
+#	box_x, box_y, box_z: Box sizes accounting for truncation of the last plane! (cf. lecture)
+#	boxX, boxY, boxZ: Box sizes accounting for periodicity --> The structure MUST be periodic in X
+
+
+
+# Execute lego with the file:
+./legoV3.1 SingleCrystalBulk_x01-1_y-111.legoparam
+
+# Now use the cut_whisker.awk script to sculpture the hexagonal nanowire from the configuration. 
+# <outfile_hex_ below is the output file for the hexagonal structure
+./cut_whisker.awk <boxX> <boxY> <boxZ> <dist2Center> <outfile> > <outfile_hex> 
+
+# EXAMPLE:
+# The '50' in the following command denotes the distance from each plane to the center of the configuration.
+./cut_whisker.awk 511.227605942015 125.224677698257 123.966106281272 50 Cu_Mishin_01-1x500_-111y125_211z125.fcc > wire_Cu_Mishin_01-1x500_-111y125_211z125.fcc
+
+# Visualize the structure with AtomEye or OVITO.
+ovito wire_Cu_Mishin_01-1x500_-111y125_211z125.fcc &
+
+# Does the structure have a regular hexagonal cross-section? 
+# If not, change the parameters of the cutting plane (in file cut_whisker.awk) in the corresponding direction to obtain a proper nanowire!
+

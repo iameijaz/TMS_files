@@ -1,0 +1,30 @@
+#  _ _  ___  _ _ _  ___  ___ 
+# | | || . || | | ||_ _|| . |
+# |   || | || | | | | | | | |
+# |_|_|`___'|__/_/  |_| `___'
+# 
+# "insert dislocations using Dcreator"
+# Arun Prakash, Wed Nov 14 23:28:02 CET 2018
+#
+
+# Have a look into the legoparam file and understand the parameters
+# In what orientation is the crystal being generated?
+less Test_Al_x100_y010.legoparam
+
+# Now run lego to create a single crystal
+./legoV3.1 Test_Al_x100_y010.legoparam
+
+# Visualize the output with ovito
+ovito Al_x100_y010_forDislocInsert.fcc
+
+# Have a look at the *.disparam file (parameter file for odcreator) and understand the parameters
+less TestInsertDisloc_111plane_b1-10_Xtal-x100y010.disparam
+
+# Run odcreator
+./odcreator TestInsertDisloc_111plane_b1-10_Xtal-x100y010.disparam
+
+# Now visualize the output configuration with ovito
+# What type of dislocation have you introduced?
+# Is the structure now periodic?
+# How can you generate a periodic structure with a dislocation? 
+# Change the parameters in the legoparam and disparam files and generate a new configuration

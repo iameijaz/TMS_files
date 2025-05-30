@@ -1,0 +1,44 @@
+# Lego parameter file for generating single crystal ...
+# with x=[110]; y=[1-12]; z=[1-1-1] orientation
+# @author: A. Prakash
+# @date: Sun Sep 23 13:36:44 CEST 2018
+#
+
+# Crystal structure
+structure	fcc
+
+#Orientation
+new_x   1  1 0
+new_y   1 -1 2
+
+#Output file
+outfile         Al_40cellsx110_12cellsy1-12_16cellsz1-1-1.fcc
+
+# Min. and max. multipliers for the linear 
+# combination of the (rotated) fcc vectors
+lower           -300
+upper            300
+
+# Epsilon added to prevent rounding errors 
+epsilon         1.0e-6
+
+# Starting value for atom numbering
+startnr         1
+
+# element / structure informations
+mass            26.982
+lattice_const   4.05
+
+# Boxdimensions, no atom should be sitting on the
+# planes (rounding errors!)
+box_x           114.0
+box_y           118.5
+box_z           112.0
+
+#header info
+header          1
+boxX            114.55  0.0  0.0
+boxY            0.0  119.05  0.0
+boxZ            0.0   0.0  112.24
+
+

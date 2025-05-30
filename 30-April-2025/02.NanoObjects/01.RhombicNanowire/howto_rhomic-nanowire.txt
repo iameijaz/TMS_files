@@ -1,0 +1,32 @@
+#  _ _  ___  _ _ _  ___  ___ 
+# | | || . || | | ||_ _|| . |
+# |   || | || | | | | | | | |
+# |_|_|`___'|__/_/  |_| `___'
+# 
+# "Shape a rhombic nanowire in Au"
+# Created by Arun Prakash, Mon Apr 21 16:17:58 CEST 2025
+
+# have a look in the parameter file for LEGO:
+less SingleCrystalBulk_x110_y111.legoparam
+# Change ??? to appropriate values
+# Ensure that the length in X is roughly 500 angstroms, and in 125 angstroms in Y and 250 angstroms in Z
+
+# try to understand the meaning of the cutting planes and cutting distances:
+#cutdir1         -1
+#cut_norm1       0.0 -0.33333333333333 0.942809041582063
+#plane_distance1 0
+
+#cut_norm2       0 -0.33333333333333 0.942809041582063
+#cutdir2         1
+#plane_distance2 110
+
+
+
+# now close the file and execute lego:
+./legoV3.1 SingleCrystalBulk_x110_y111.legoparam
+
+
+
+
+# Visualize the nanowire with OVITO:
+ovito <outfile> & 

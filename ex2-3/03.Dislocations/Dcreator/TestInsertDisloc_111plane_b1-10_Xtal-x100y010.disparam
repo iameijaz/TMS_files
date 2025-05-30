@@ -1,0 +1,30 @@
+# Example Disparam file for ODCREATOR
+# to create a screw dislocation on the (111) plane
+# with Burges vector in the (0-11 direction)
+# in a crystal with x||[100] and y||[010] directions
+# 
+#@auth: A. Prakash
+#@date: Mon Nov 12 16:11:00 CET 2018
+#@mail: arun.prakash@imfd.tu-freiberg.de
+
+
+#Input/Output files
+outfile       screw_n111_bBA_Al_x100_y010.fcc 
+configfile    Al_x100_y010_forDislocInsert.fcc
+
+#Orientation
+new_x         1.0  0.0  0.0
+new_y         0.0  1.0  0.0
+new_z         0.0  0.0  1.0
+
+#Dislocation details
+glideplane    1.0  1.0  1.0
+burgersv       2.025  -2.025  0.0
+linev         1.0  -1.0  0.0
+
+#Insertion point
+point         20.25  20.25  20.25
+
+#Splitting distance of partials
+stripe        16
+

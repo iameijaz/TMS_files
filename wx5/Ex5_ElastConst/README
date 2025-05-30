@@ -1,0 +1,26 @@
+#####################################################################################################################
+# Course: Theory, Modelling, and Simulation of Microstructures (TMS)
+# Tutors: Dr. Arun Prakash
+# Description: Finds the Elastic constants of your element
+######################################################################################################################
+
+1. Based on your chosen potential replace "???" in 'init.mod' and potential.mod. Keep these files in such a location so that they can access the potential files.
+
+2. To run use <lammps executable file> in.elastic 
+
+3. The log file will contain the information of the elastic constants at the end of the file. 
+
+4. Read the preambles of "in.elastic" and "init.mod" files. Vary the value of "up" variable in init.mod upto +/- one order and check if the results are the same. 
+
+ 
+ ==========================================================
+ A=3.05737310140778379 --> Zener Anisotropy
+ 
+
+    A=3.058A=3.058 indicates the material is elastically anisotropic.
+
+    Isotropic materials have A=1
+
+    A value A>1 means shear stiffness is relatively higher in [100][100] compared to [111][111] directions.
+    
+    

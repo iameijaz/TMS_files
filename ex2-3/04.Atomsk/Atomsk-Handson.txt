@@ -1,0 +1,143 @@
+# A simple howto providing some commands for sample generation using Atomsk
+# Authors: Dr. S. Roy and Dr. A. Prakash
+# Date: Wed Nov 14 21:05:09 CET 2018
+# This document is created by S. Roy, 2018, using tutorials from http://atomsk.univ-lille1.fr/index.php
+#--------------------------------------
+# Conversion of a file 
+## from xsf to cfg 
+atomsk Al_unitcell.xsf Al_final.cfg
+
+## from xsf to cfg, keeping the same file name
+atomsk Al_unitcell.xsf cfg
+
+## converting to several formats, "Al_unitcell.cfg" for visualization with Atomeye, the file "Al_unitcell.lmp" for a simulation with LAMMPS, and the file "POSCAR" for a simulation with VASP
+atomsk Al_unitcell.xsf cfg lammps vasp
+
+
+
+# To create an orthogonal sample of 10 unit cell in 3 directions.
+atomsk --create fcc 4.08 Au -duplicate 10 10 10 Au101010.cfg
+# -- From left: the term 4th is lattice constant, 5th- element type, 6th- duplicates the initial system, 7th & 8th & 9th - 10 unit cells in x, y and z directions, last term is the output file. 
+
+
+# To cut the sample by a plane at x=30 Angstroem (Ang) 
+atomsk Au101010.cfg -cut above 30 x Au101010_cut_x5.cfg
+# -- From left: the term 2nd - initial structure to make cut, 3rd- cut command, 4th & 5th & 6th - to remove atoms above the plane defined by x=30 Ang, last term is the output file.
+    
+
+# To cut the sample in [111] direction at 5 Ang.
+atomsk Au101010.cfg -cut above 5 [111] Au101010_cut_x111_at5.cfg
+# -- Similar to above; it removes all the atoms located above the crystallographic direction [111] at the distance of 5 Ang and save it as the last term.  
+
+
+-------------------------------------------
+# To create a Au nanopillar  
+## First create a bulk material 
+atomsk --create fcc 4.08 Au -duplicate 40 40 40 Au404040.cfg
+
+## Or create a bulk material in a specific direction
+atomsk --create fcc 4.08 Au orient [110] [1-10] [001] -duplicate 40 40 40 Au404040.cfg
+# -- creates 40X40X40 unit cells and crystallographic orientations in x, y and z directions, respectively.
+
+
+### To create a rectangular nanopillar 
+atomsk Au404040.cfg \
+-select out box 0.2*box -INF 0.2*box 0.8*box INF 0.8*box \
+-remove-atom select \
+nanopillar.cfg
+# -- 1st line: atomsk takes the input file. 
+# -- 2nd line: it selects all the atoms outside a box. 
+# -- 3rd line: removes the selected atoms
+# -- 4th line: output 
+
+
+### To create nanopillar with a base of 20 amstrong in Y direction
+atomsk Au404040.cfg \
+-select out box 0.2*box -INF 0.2*box 0.8*box INF 0.8*box \
+-cut above 20 Y \
+nanopillar.cfg
+# -- 3rd line: removes all the atoms out side the box but above the plane at 20 Ang in y direction.
+
+
+### To create nanopillar of cylindrical shape
+atomsk Au404040.cfg \
+-select out cylinder Y 0.5*box 0.5*box 40 \
+-cut above 20 Y \
+nanopillar.cfg 
+# -- 2nd line: select the atoms outside of a cylinder. From left; 3rd- cylinder for cylindrical shape, 4th -  axis of the cylinder - here it's y axis, 4th- position of axis in a plane normal the axis, last term- radius of the cylinder
+
+
+
+-----------------------------------------------
+#To create dislocations, edge and screw
+
+####### Edge dislocation ########
+## Creating an unit cell in a specific direction
+atomsk --create fcc 4.046 Au orient [110] [-111] [1-12] Au_unitcell.cfg
+
+## Creating a supercell of this orientation
+atomsk Au_unitcell.cfg -duplicate 60 20 1 Au_supercell.cfg
+
+### Introducing an edge dislocation in the super cell. Need atomeye to visualize the stress 
+atomsk Au_supercell.cfg -dislocation 0.51*box 0.501*box edge Z Y 2.884995 0.44 Au_edge.cfg     ## 3rd and 2nd from right are magnitute of Burgers vector and Poisson ratiio
+# -- dislocation is introduced around a middle of the box of edge character, along Z direction (5th from right), with glide plane normal to Y (4th from right), last term- output.
+  
+
+### Introducing en edge dislocation without changing number of atoms
+atomsk Au_supercell.cfg -dislocation 0.51*box 0.501*box edge22 Z Y 2.884995 0.44 Au_edge.cfg     ## 3rd and 2nd from right are magnitute of Burgers vector and Poisson ratio 
+
+
+####### Screw dislocation ########
+## Creating a supercell to introcude a screw dislocation whose Burgers vector is along the dislocation line
+atomsk --create fcc 4.08 Au orient [1-12] [-111] [110] -duplicate 40 20 1 Au_supercell.cfg
+
+### Introducing a screw dislocation in the super cell. Need atomeye to visualize the stress 
+atomsk Au_supercell.cfg -dislocation 0.51*box 0.501*box screw Z Y 2.884995 Au_screw.xsf cfg
+# -- Similar to above without Poinsson ratio
+
+
+
+--------------------------------------------------------------
+#To create a dislocation loop 
+
+## Creating a Au bulk material in specific crystallographic orientation
+atomsk --create fcc 4.08 Au orient [110] [1-12] [-111] -duplicate 60 40 20 Au_supercell.cfg
+
+### Introducing a circular dislocation loop of radius 30 amstrong
+atomsk Au_supercell.cfg -disloc loop 0.501*box 0.501*box 0.501*box Z 30 2.884995 0 0 0.44 Au_loop.cfg   ## 5th and 2nd from right are magnitute of Burgers vector and Poisson ratio
+# -- from left: 5th & 6th & 7th- position of loop center, 8th- normal to loop plane- here it's Z and loop is in x-y plane, 9th- 30 Ang radius of the loop.   
+
+### Introducing a square dislocation loop by mod ############ need to check this ##########
+atomsk Au_supercell.cfg -disloc loop 0.501*box 0.501*box 0.501*box Z -30 2.884995 0 0 0.44 Au_loop2.cfg
+
+### Introducing a loop in an arbitrary plane
+atomsk --create fcc 4.08 Au -duplicate 40 40 40 \
+-orient [100] [010] [001] [1-10] [11-2] [111] \
+-disloc loop 0.501*box 0.501*box 0.501*box Z 30 2.884995 0 0 0.44 \
+-alignx Au_loop2.cfg
+# -- 2nd line: first 3 directions are initial orientations in x, y and z directions and last 3 are the final ones.
+# -- 4th line: alignx rotates the crystal back to it's original orientaion 
+
+### Introducing a partial loop
+atomsk --create fcc 4.08 Au -duplicate 40 40 40 \
+-orient [100] [010] [001] [1-10] [11-2] [111] \
+-disloc loop -60 0.6*box 0.7*box Z 50 2.884995 0 0 0.44 \
+-alignx Au_loop3.cfg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
