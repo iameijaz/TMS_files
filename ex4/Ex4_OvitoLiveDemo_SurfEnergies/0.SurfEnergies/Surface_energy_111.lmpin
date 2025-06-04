@@ -1,0 +1,75 @@
+#####################################################################################################################
+# Course: Theory, Modelling, and Simulation of Microstructures (TMS)
+# Tutors: Dr. Arun Prakash
+# Description: Finds the total energy of a relaxed slab having free surfaces along (111) direction
+######################################################################################################################
+
+# ---------- Initialize Simulation --------------------- 
+clear 
+variable 	latt0 equal 4.09000014545435 
+variable 	lblock	equal 10
+#variable 	atomjiggle equal 1.0e-5	 ### amount of pertubation to atom's position: uncomment and use only when alphasearch is zero
+
+units 		metal
+atom_style 	atomic
+boundary	p  p  s
+newton  	off  off
+processors	*  *  *  
+
+# ---------- Create Atoms --------------------- 
+lattice		fcc  ${latt0}  orient  x  1  -1  2  orient  y  1  1  0  orient  z  -1  1  1  origin  0.0    0.0    0.0
+region          sim_region  block  -2  ${lblock}  0  ${lblock}  0  ${lblock}  units  lattice #### "-2" for x_lo -> To have periodicity along x for the given orientation; Change it to check the periodicity
+create_box      1  sim_region
+create_atoms	1  box
+
+#Provide potential
+pair_style      eam/alloy ### --> TYPE OF POTENTIAL (eam (OR) eam/alloy)
+pair_coeff      *  *  CuAg.eam.alloy Ag  ### POTENTIAL FILENAME
+
+neighbor	2.0  bin  
+neigh_modify    delay  3
+
+
+#--------------Define Settings-------------------
+variable   	natoms equal "count(all)"
+variable   	ecoh equal "pe/v_natoms"
+variable   	latt equal "lx/v_lblock"
+variable 	teng equal "etotal"
+
+thermo_style	custom step pe etotal pxx  pyy  pzz pxy pyz pxz fnorm lx  ly  lz v_ecoh v_latt
+
+thermo		10
+
+#dump		drelax  all  atom  1000 dump.atom.*
+
+
+#------------- Run minimization ---------------
+#fix 		1 all box/relax x 0.0 z 0.0 xz 0.0 
+min_style	cg 
+minimize        0.0 1.0e-10 100000 100000 
+
+
+# -------- To displace atoms's positions in case atom reaches a saddle position ----------- 
+#displace_atoms 	all random ${atomjiggle} ${atomjiggle} ${atomjiggle} 87287 units box
+#minimize        0.0 1.0e-10 100000 100000 
+
+ 
+print "Total energy of the slab (eV) = ${teng};"
+print "Number of atoms = ${natoms};"
+print "Lattice constant (Angstoms) = ${latt};"
+print "Cohesive energy (eV) = ${ecoh};"
+##
+
+# Bulk cohesive energy per atom
+variable Ecoh_bulk equal -2.84999997472111
+
+# Calculate surface area
+variable area equal lx*ly
+
+# Calculate surface energy (fully correct LAMMPS syntax)
+variable surface_energy equal (v_teng-v_Ecoh_bulk*v_natoms)/(2*v_area)
+
+# Output everything
+print "Surface area (A^2) = ${area};"
+print "Surface energy (eV/A^2) = ${surface_energy};"
+

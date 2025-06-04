@@ -1,0 +1,14 @@
+#####################################################################################################################
+# Course: Theory, Modelling, and Simulation of Microstructures (TMS)
+# Tutors: Dr. Arun Prakash
+# Description: Relax the hex nanowires generated in the previous exercise
+######################################################################################################################
+
+1) Open your generated hexagonal nanowire in Ovito and export it as a lammps data file with the extension >>>ldata<<<. Provide a proper filename
+Example: HexWire_AlMishin1999_x110_y111.ldata
+
+2) Provide the nanowire data file name and the interatomic potential details in "TMS_Nanowire_relaxation.lmpin"
+
+3) Run the energy minimization. NOTE: The stopping criterion must be "Force tolerance"
+
+

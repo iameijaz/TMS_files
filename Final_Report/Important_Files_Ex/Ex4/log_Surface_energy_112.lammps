@@ -1,0 +1,149 @@
+LAMMPS (2 Aug 2023 - Update 3)
+#####################################################################################################################
+# Course: Theory, Modelling, and Simulation of Microstructures (TMS)
+# Tutors: Dr. Arun Prakash
+# Description: Finds the total energy of a relaxed slab having free surfaces along (112) direction
+######################################################################################################################
+
+clear
+variable latt0 equal 4.09000014545435
+variable lblock equal 10
+
+units metal
+atom_style atomic
+boundary p s p
+newton off off
+processors * * *
+
+lattice fcc ${latt0} orient x 1 -1 0 orient y 1 1 -1 orient z 1 1 2 origin 0.0 0.0 0.0
+lattice fcc 4.09000014545435 orient x 1 -1 0 orient y 1 1 -1 orient z 1 1 2 origin 0.0 0.0 0.0
+Lattice spacing in x,y,z = 5.7841337 7.0840881 6.6789423
+region sim_region block -2 ${lblock} 0 ${lblock} 0 ${lblock} units lattice
+region sim_region block -2 10 0 ${lblock} 0 ${lblock} units lattice
+region sim_region block -2 10 0 10 0 ${lblock} units lattice
+region sim_region block -2 10 0 10 0 10 units lattice
+create_box 1 sim_region
+Created orthogonal box = (-11.568267 0 0) to (57.841337 70.840881 66.789423)
+  1 by 1 by 1 MPI processor grid
+create_atoms 1 box
+Created 19848 atoms
+  using lattice units in orthogonal box = (-11.568267 -0.0070840881 0) to (57.841337 70.847965 66.789423)
+  create_atoms CPU = 0.007 seconds
+
+pair_style eam/alloy
+pair_coeff * * CuAg.eam.alloy Ag
+
+neighbor 2.0 bin
+neigh_modify delay 0
+
+variable natoms equal "count(all)"
+variable ecoh equal "pe/v_natoms"
+variable latt equal "lx/v_lblock"
+variable teng equal "etotal"
+
+thermo_style custom step pe etotal pxx pyy pzz pxy pyz pxz fnorm lx ly lz v_ecoh v_latt
+thermo 10
+
+min_style cg
+minimize 0.0 1.0e-10 100000 100000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7.995011
+  ghost atom cutoff = 7.995011
+  binsize = 3.9975055, bins = 18 18 17
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton off
+      pair build: half/bin/newtoff
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 14.06 | 14.06 | 14.06 Mbytes
+   Step         PotEng         TotEng          Pxx            Pyy            Pzz            Pxy            Pyz            Pxz           Fnorm            Lx             Ly             Lz           v_ecoh         v_latt    
+         0  -52290.585     -52290.585     -3923.0145     -2280.4143      72199.162     -1.4508639e-12  135.55255     -1.4964234e-11  596.55795      69.409604      70.855049      66.789423     -2.6345518      6.9409604    
+        10  -55680.704     -55680.704      5506.1172      7390.867       16865.228     -1.9248346e-12  1669.9891     -5.7232953e-12  10.489165      69.409604      70.855049      66.789423     -2.8053559      6.9409604    
+        20  -55729.929     -55729.929      6077.7113      4742.2956      14280.88      -6.4985294e-13 -757.81941     -2.4934072e-12  3.6059322      69.409604      70.855049      66.789423     -2.807836       6.9409604    
+        30  -55739.377     -55739.377      5226.5468      2171.3916      13007.751      9.9121992e-13 -1159.1778      1.3873999e-12  2.3199448      69.409604      70.855049      66.789423     -2.808312       6.9409604    
+        40  -55743.898     -55743.898      4072.9159     -183.51892      11025.777     -3.6448354e-13 -1235.2787      5.7403535e-12  1.5172092      69.409604      70.855049      66.789423     -2.8085398      6.9409604    
+        50  -55745.977     -55745.977      3375.2766     -1181.4926      10363.641      3.7470926e-13 -1073.1883      1.0638932e-11  1.3095513      69.409604      72.263025      66.789423     -2.8086445      6.9409604    
+        60  -55747.307     -55747.307      3182.8723     -1224.6182      10144.591     -4.0782191e-12 -903.90651      2.8762907e-11  1.0066745      69.409604      72.263025      66.789423     -2.8087116      6.9409604    
+        70  -55749.929     -55749.929      3340.8958     -802.60172      10404.797     -4.3371932e-11 -731.03248      1.0288984e-10  2.1570492      69.409604      72.50852       66.789423     -2.8088437      6.9409604    
+        80  -55757.292     -55757.292      3767.1884     -569.43033      11399.675     -5.666558e-11  -665.21118      9.1894077e-11  3.4191776      69.409604      72.123384      66.789423     -2.8092146      6.9409604    
+        90  -55760.992     -55760.992      3859.0854     -445.48984      11602.508     -6.3049979e-11 -595.73295      9.8657946e-11  0.88555657     69.409604      72.123384      66.789423     -2.809401       6.9409604    
+       100  -55761.434     -55761.434      3933.0036     -285.40895      11753.238     -1.2220236e-10 -571.25876      1.6945363e-10  0.40758714     69.409604      72.123384      66.789423     -2.8094233      6.9409604    
+       110  -55761.595     -55761.595      4001.2806     -91.068245      11912.758     -3.3051997e-10 -535.10359      4.4364524e-10  0.3649843      69.409604      72.123384      66.789423     -2.8094314      6.9409604    
+       120  -55761.725     -55761.725      4039.6455      143.59038      12061.777     -9.9644543e-10 -452.19344      1.3554153e-09  0.25635427     69.409604      72.123384      66.789423     -2.809438       6.9409604    
+       130  -55761.774     -55761.774      3998.9666      160.3935       12121.985     -2.318357e-09  -383.46948      3.2062444e-09  0.14885006     69.409604      72.123384      66.789423     -2.8094405      6.9409604    
+       140  -55761.798     -55761.798      3920.1942      77.305066      12129.783     -6.4493461e-09 -301.00798      8.8529259e-09  0.12931578     69.409604      72.123384      66.789423     -2.8094416      6.9409604    
+       150  -55761.821     -55761.821      3798.1369     -56.114852      12138.187     -2.278282e-08  -184.43915      3.123835e-08   0.14711601     69.409604      72.123384      66.789423     -2.8094428      6.9409604    
+       160  -55761.841     -55761.841      3696.5933     -145.47051      12155.759     -7.4235495e-08 -71.937348      1.0161089e-07  0.11310759     69.409604      72.123384      66.789423     -2.8094438      6.9409604    
+       170  -55761.852     -55761.852      3676.953      -119.05202      12189.806     -1.93222e-07   -20.333487      2.6545863e-07  0.079546465    69.409604      72.123384      66.789423     -2.8094444      6.9409604    
+       180  -55761.857     -55761.857      3699.2591     -55.723883      12218.517     -4.5580282e-07 -7.0004048      6.2469805e-07  0.038874716    69.409604      72.123384      66.789423     -2.8094446      6.9409604    
+       190  -55761.858     -55761.858      3711.5321     -24.650188      12237.92      -9.0424314e-07 -2.8972902      1.2378677e-06  0.016463085    69.409604      72.123384      66.789423     -2.8094447      6.9409604    
+       200  -55761.858     -55761.858      3716.4035     -12.308754      12243.784     -1.704705e-06  -1.4722412      2.3330535e-06  0.0070449383   69.409604      72.123384      66.789423     -2.8094447      6.9409604    
+       210  -55761.858     -55761.858      3719.3362     -4.1835105      12248.253     -3.7127891e-06 -0.11355605     5.0814945e-06  0.0037245714   69.409604      72.123384      66.789423     -2.8094447      6.9409604    
+       220  -55761.858     -55761.858      3720.8546     -0.021292248    12250.332     -8.144342e-06   0.34434508     1.1145857e-05  0.0019243962   69.409604      72.123384      66.789423     -2.8094447      6.9409604    
+       230  -55761.858     -55761.858      3721.1779      0.82442534     12250.661     -1.639856e-05   0.43686064     2.2441147e-05  0.00096123464  69.409604      72.123384      66.789423     -2.8094447      6.9409604    
+       240  -55761.858     -55761.858      3721.1731      0.72572048     12250.562     -4.1182288e-05  0.38420924     5.6353824e-05  0.00068637977  69.409604      72.123384      66.789423     -2.8094447      6.9409604    
+       247  -55761.858     -55761.858      3721.1189      0.49167789     12250.424     -7.4284742e-05  0.32939781     0.00010164972  0.00054466436  69.409604      72.123384      66.789423     -2.8094447      6.9409604    
+Loop time of 18.9219 on 1 procs for 247 steps with 19848 atoms
+
+100.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = linesearch alpha is zero
+  Energy initial, next-to-last, final = 
+     -52290.5848043506  -55761.8580186844  -55761.8580186844
+  Force two-norm initial, final = 596.55795 0.00054466436
+  Force max component initial, final = 18.982279 2.3600685e-05
+  Final line search alpha, max atom move = 0.03125 7.375214e-07
+  Iterations, force evaluations = 247 490
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 18.605     | 18.605     | 18.605     |   0.0 | 98.33
+Neigh   | 0.13967    | 0.13967    | 0.13967    |   0.0 |  0.74
+Comm    | 0.014889   | 0.014889   | 0.014889   |   0.0 |  0.08
+Output  | 0.0050335  | 0.0050335  | 0.0050335  |   0.0 |  0.03
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.1568     |            |       |  0.83
+
+Nlocal:          19848 ave       19848 max       19848 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          10364 ave       10364 max       10364 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    1.35775e+06 ave 1.35775e+06 max 1.35775e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1357752
+Ave neighs/atom = 68.407497
+Neighbor list builds = 3
+Dangerous builds = 0
+
+print "Total energy of the slab (eV) = ${teng};"
+Total energy of the slab (eV) = -55761.8580186844;
+print "Number of atoms = ${natoms};"
+Number of atoms = 19848;
+print "Lattice constant (Angstoms) = ${latt};"
+Lattice constant (Angstoms) = 6.94096041097137;
+print "Cohesive energy (eV) = ${ecoh};"
+Cohesive energy (eV) = -2.80944468050607;
+
+# Bulk cohesive energy per atom
+variable Ecoh_bulk equal -2.84999997472111
+
+# Calculate surface area
+variable area equal lx*ly
+
+# Calculate surface energy (fully correct LAMMPS syntax)
+variable surface_energy equal (v_teng-v_Ecoh_bulk*v_natoms)/(2*v_area)
+
+# Output everything
+print "Surface area (A^2) = ${area};"
+Surface area (A^2) = 5006.0555472142;
+print "Surface energy (eV/A^2) = ${surface_energy};"
+Surface energy (eV/A^2) = 0.08039677866021;
+
+
+Total wall time: 0:00:19

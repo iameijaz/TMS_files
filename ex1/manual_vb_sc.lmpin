@@ -1,0 +1,52 @@
+# ---------- Initialize Simulation --------------------- 
+clear 
+
+# Lattice constant from your calculation
+variable latt0 equal 4.09000014545435
+# Size of simulation box
+variable lblock equal 10
+# Vacancy toggle: 0 = perfect system, 1 = create vacancy
+variable vacancy equal 0
+# Atom ID to delete if vacancy
+variable atmid equal 1
+
+units metal
+atom_style atomic
+boundary p p p
+newton off off
+processors * * *
+
+# ---------- Create Atoms --------------------- 
+lattice fcc ${latt0} orient x 1 0 0 orient y 0 1 0 orient z 0 0 1 origin 0.0 0.0 0.0
+region sim_region block 0 ${lblock} 0 ${lblock} 0 ${lblock} units lattice
+create_box 1 sim_region
+create_atoms 1 box
+
+# Provide potential
+pair_style eam/alloy
+pair_coeff * * CuAg.eam.alloy Ag
+
+neighbor 2.0 bin
+neigh_modify delay 3
+
+#--------------Define Settings-------------------
+variable natoms equal "count(all)"
+variable ecoh equal "pe/v_natoms"
+variable latt equal "lx/v_lblock"
+variable teng equal "etotal"
+
+thermo_style custom step pe etotal pxx pyy pzz fnorm lx ly lz v_ecoh v_latt
+thermo 10
+
+# ------------ Conditionally delete atom for vacancy calculation -------------
+if "${vacancy} == 1" then "group atomAl id ${atmid}; delete_atoms group atomAl"
+
+# ------------- Run minimization ---------------
+fix 1 all box/relax iso 0.0 
+min_style cg
+minimize 0.0 1.0e-10 10000 10000 
+
+# Output results
+print "Total energy (eV) = ${teng};"
+print "Number of atoms = ${natoms};"
+

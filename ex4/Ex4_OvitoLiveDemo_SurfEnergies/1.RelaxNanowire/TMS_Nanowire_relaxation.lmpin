@@ -1,0 +1,65 @@
+#####################################################################################################################
+# Course: Theory, Modelling, and Simulation of Microstructures (TMS)
+# Tutors: Dr. Arun Prakash
+# Description: Script to relax the nanowires
+######################################################################################################################
+
+# ---------- INITIALIZAITION --------------------- 
+clear 
+#variable 	atomjiggle equal 1.0e-5	 ### amount of pertubation to atom's position
+
+units 		metal
+atom_style 	atomic
+boundary	p  f  f       
+processors	*  1  1  
+
+#----------- LOG ------------------
+variable    outfilename   string    relax_Hexagonal_wire
+log     ${outfilename}.log
+
+
+# --------------- STRUCTURE IMPORT -----------------
+read_data	 ??? ### Nanowire structure data
+
+
+# --------------------- FORCE FIELDS ---------------------
+pair_style      ??? ### TYPE OF POTENTIAL (eam (OR) eam/alloy)
+pair_coeff      *  *  ??? ### POTENTIAL FILENAME
+
+
+# --------------------- SETTINGS ---------------------
+neighbor	2.0  bin  
+neigh_modify    delay  3
+
+
+# ---------- DEFINE COMPUTES --------------------- 
+compute totpe all pe/atom
+compute atompe all reduce ave c_totpe
+compute petot  all reduce sum c_totpe
+
+
+# ---------- DEFINE THERMO-PARAMETERS --------------------- 
+thermo 10
+thermo_style custom step time pe ke temp fnorm c_atompe lx ly lz press pxx pyy pzz pxy pyz pxz
+thermo_modify   flush yes
+
+
+#------------- DATA EXPORT ---------------
+dump relax_dump all atom 1000 dump.${outfilename}
+
+
+#------------- ENERGY MINIMIZATION ---------------
+fix 		1 all box/relax x 0.0   
+min_style       cg
+minimize        0.0 1.0e-7 1000000 1000000 
+
+
+# -------- To displace atoms's positions in case atom reaches a saddle position ----------- 
+#displace_atoms 	all random ${atomjiggle} ${atomjiggle} ${atomjiggle} 378676 units box
+#minimize        0.0 1.0e-7 1000000 1000000 
+
+
+unfix 1
+undump relax_dump
+
+

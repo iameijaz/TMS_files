@@ -1,0 +1,146 @@
+LAMMPS (2 Aug 2023 - Update 3)
+#####################################################################################################################
+# Course: Theory, Modelling, and Simulation of Microstructures (TMS)
+# Tutors: Dr. Arun Prakash
+# Description: Finds the lattice constant and cohesive energy
+######################################################################################################################
+
+# ---------- Initialize Simulation ---------------------
+clear
+variable 	latt0 equal 4  ### Assume:: provide an approximate lattice constant of the element
+variable 	lblock	equal 5
+
+units 		metal
+atom_style 	atomic
+boundary	p  p  p
+newton  	off  off
+processors	*  *  *
+
+# ---------- Create Atoms ---------------------
+lattice		fcc  ${latt0}  orient  x  1  0  0  orient  y  0  1  0  orient  z  0  0  1  origin  0.0    0.0    0.0
+lattice		fcc  4  orient  x  1  0  0  orient  y  0  1  0  orient  z  0  0  1  origin  0.0    0.0    0.0
+Lattice spacing in x,y,z = 4 4 4
+region          sim_region  block  0  ${lblock}  0  ${lblock}  0  ${lblock}  units  lattice
+region          sim_region  block  0  5  0  ${lblock}  0  ${lblock}  units  lattice
+region          sim_region  block  0  5  0  5  0  ${lblock}  units  lattice
+region          sim_region  block  0  5  0  5  0  5  units  lattice
+create_box      1  sim_region
+Created orthogonal box = (0 0 0) to (20 20 20)
+  1 by 1 by 1 MPI processor grid
+create_atoms	1  box
+Created 500 atoms
+  using lattice units in orthogonal box = (0 0 0) to (20 20 20)
+  create_atoms CPU = 0.000 seconds
+
+#Provide potential
+pair_style      eam/alloy ### --> TYPE OF POTENTIAL (eam (OR) eam/alloy)
+pair_coeff      *  *  CuAg.eam.alloy Ag  ### POTENTIAL FILENAME
+
+neighbor	2.0  bin
+neigh_modify    delay  3
+
+
+#--------------Define Settings-------------------
+variable   	natoms equal "count(all)"
+variable   	ecoh equal "pe/v_natoms"
+variable   	latt equal "lx/v_lblock"
+variable 	teng equal "etotal"
+
+thermo_style	custom step pe etotal pxx  pyy  pzz fnorm lx  ly  lz v_ecoh v_latt
+
+thermo		10
+
+#write_restart	restart.equil
+#dump		drelax  all  atom  1000 dump.atom.*
+
+#------------- Run minimization ---------------
+fix 		1 all box/relax iso 0.0
+min_style       cg
+minimize        0.0 1.0e-10 10000 10000
+Switching to 'neigh_modify every 1 delay 0 check yes' setting during minimization
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7.995011
+  ghost atom cutoff = 7.995011
+  binsize = 3.9975055, bins = 6 6 6
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton off
+      pair build: half/bin/newtoff
+      stencil: full/bin/3d
+      bin: standard
+WARNING: Energy due to 1 extra global DOFs will be included in minimizer energies
+ (../min.cpp:228)
+Per MPI rank memory allocation (min/avg/max) = 4.519 | 4.519 | 4.519 Mbytes
+   Step         PotEng         TotEng          Pxx            Pyy            Pzz           Fnorm            Lx             Ly             Lz           v_ecoh         v_latt    
+         0  -1411.9819     -1411.9819      80210.999      80210.999      80210.999      3.8418268e-15  20             20             20            -2.8239639      4            
+        10  -1413.1534     -1413.1534      76058.526      76058.526      76058.526      6.269562e-13   20.02          20.02          20.02         -2.8263068      4.004        
+        20  -1414.2655     -1414.2655      71989.593      71989.593      71989.593      7.2835471e-13  20.04          20.04          20.04         -2.828531       4.008        
+        30  -1415.3191     -1415.3191      67993.989      67993.989      67993.989      1.3604834e-12  20.06          20.06          20.06         -2.8306382      4.012        
+        40  -1416.315      -1416.315       64061.501      64061.501      64061.501      1.1401651e-12  20.08          20.08          20.08         -2.83263        4.016        
+        50  -1417.2539     -1417.2539      60182.608      60182.608      60182.608      1.0890833e-12  20.1           20.1           20.1          -2.8345078      4.02         
+        60  -1418.1363     -1418.1363      56354.852      56354.852      56354.852      1.6342168e-12  20.12          20.12          20.12         -2.8362726      4.024        
+        70  -1418.9627     -1418.9627      52577.387      52577.387      52577.387      1.3525454e-12  20.14          20.14          20.14         -2.8379255      4.028        
+        80  -1419.7338     -1419.7338      48849.43       48849.43       48849.43       1.707322e-12   20.16          20.16          20.16         -2.8394675      4.032        
+        90  -1420.4499     -1420.4499      45170.398      45170.398      45170.398      1.859681e-12   20.18          20.18          20.18         -2.8408998      4.036        
+       100  -1421.1117     -1421.1117      41539.654      41539.654      41539.654      1.4279979e-12  20.2           20.2           20.2          -2.8422234      4.04         
+       110  -1421.7196     -1421.7196      37956.498      37956.498      37956.498      1.3266654e-12  20.22          20.22          20.22         -2.8434392      4.044        
+       120  -1422.2742     -1422.2742      34420.163      34420.163      34420.163      1.0103586e-12  20.24          20.24          20.24         -2.8445483      4.048        
+       130  -1422.7759     -1422.7759      30930.633      30930.633      30930.633      1.4976648e-12  20.26          20.26          20.26         -2.8455517      4.052        
+       140  -1423.2252     -1423.2252      27486.646      27486.646      27486.646      1.1459689e-12  20.28          20.28          20.28         -2.8464505      4.056        
+       150  -1423.6227     -1423.6227      24088.172      24088.172      24088.172      1.2275255e-12  20.3           20.3           20.3          -2.8472455      4.06         
+       160  -1423.9689     -1423.9689      20734.708      20734.708      20734.708      1.5444225e-12  20.32          20.32          20.32         -2.8479377      4.064        
+       170  -1424.2641     -1424.2641      17425.425      17425.425      17425.425      2.3176446e-12  20.34          20.34          20.34         -2.8485282      4.068        
+       180  -1424.509      -1424.509       14160.215      14160.215      14160.215      2.689911e-12   20.36          20.36          20.36         -2.849018       4.072        
+       190  -1424.7039     -1424.7039      10938.676      10938.676      10938.676      3.3912799e-12  20.38          20.38          20.38         -2.8494078      4.076        
+       200  -1424.8494     -1424.8494      7760.0468      7760.0468      7760.0468      3.6638426e-12  20.4           20.4           20.4          -2.8496988      4.08         
+       210  -1424.946      -1424.946       4624.4038      4624.4038      4624.4038      3.969206e-12   20.42          20.42          20.42         -2.8498919      4.084        
+       220  -1424.994      -1424.994       1530.9401      1530.9401      1530.9401      3.7129697e-12  20.44          20.44          20.44         -2.849988       4.088        
+       227  -1425          -1425          -1.7024169e-10 -1.8924377e-10  1.3195252e-10  3.5935143e-12  20.450001      20.450001      20.450001     -2.85           4.0900001    
+Loop time of 0.276556 on 1 procs for 227 steps with 500 atoms
+
+99.9% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = force tolerance
+  Energy initial, next-to-last, final = 
+     -1411.98192713295  -1424.99998735938  -1424.99998736056
+  Force two-norm initial, final = 1201.5305 3.7847406e-12
+  Force max component initial, final = 1201.5305 1.1878198e-12
+  Final line search alpha, max atom move = 1 1.1878198e-12
+  Iterations, force evaluations = 227 229
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.26631    | 0.26631    | 0.26631    |   0.0 | 96.29
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.00082508 | 0.00082508 | 0.00082508 |   0.0 |  0.30
+Output  | 0.00052327 | 0.00052327 | 0.00052327 |   0.0 |  0.19
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.008899   |            |       |  3.22
+
+Nlocal:            500 ave         500 max         500 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           1956 ave        1956 max        1956 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          46710 ave       46710 max       46710 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 46710
+Ave neighs/atom = 93.42
+Neighbor list builds = 0
+Dangerous builds = 0
+
+print "Total energy (eV) = ${teng};"
+Total energy (eV) = -1424.99998736056;
+print "Number of atoms = ${natoms};"
+Number of atoms = 500;
+print "Lattice constant (Angstoms) = ${latt};"
+Lattice constant (Angstoms) = 4.09000014545435;
+print "Cohesive energy (eV) = ${ecoh};"
+Cohesive energy (eV) = -2.84999997472111;
+
+
+Total wall time: 0:00:00

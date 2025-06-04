@@ -6,7 +6,7 @@
 
 # ---------- Initialize Simulation --------------------- 
 clear 
-variable 	latt0 equal 4.09 ### provide the lattice constant from your calculation
+variable 	latt0 equal 4.09000014545435 ### provide the lattice constant from your calculation
 variable 	lblock	equal 10
 
 # ------ Define a variable for atoms id -----------
