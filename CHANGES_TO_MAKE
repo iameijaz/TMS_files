@@ -1,0 +1,13 @@
+Property	Error (%)
+Lattice constant	0.0000036% ✅
+Cohesive energy	~0.0000009% ✅
+Vacancy formation energy	~99.9998% ❌ (likely due to precision or method error)
+Surface energy (110)	~22.43% ❗ (significant deviation)
+Bulk Modulus B	~25.7% ❗
+SSF	~3025% ❗
+USF	~1497% ❗
+UTF	~86.9% ❗
+
+------------------------------
+Python script gives only 42% FCC, so recheck the script.
+
