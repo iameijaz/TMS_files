@@ -1,0 +1,148 @@
+LAMMPS (2 Aug 2023 - Update 3)
+#####################################################################################################################
+# Course: Theory, Modelling, and Simulation of Microstructures (TMS)
+# Tutors: Dr. Arun Prakash
+# Description: Finds the total energy of a relaxed slab having free surfaces along (111) direction
+######################################################################################################################
+
+# ---------- Initialize Simulation ---------------------
+clear
+variable 	latt0 equal 4.09000014545435
+variable 	lblock	equal 10
+#variable 	atomjiggle equal 1.0e-5	 ### amount of pertubation to atom's position: uncomment and use only when alphasearch is zero
+
+units 		metal
+atom_style 	atomic
+boundary	p  p  s
+newton  	off  off
+processors	*  *  *
+
+# ---------- Create Atoms ---------------------
+lattice		fcc  ${latt0}  orient  x  1  -1  2  orient  y  1  1  0  orient  z  -1  1  1  origin  0.0    0.0    0.0
+lattice		fcc  4.09000014545435  orient  x  1  -1  2  orient  y  1  1  0  orient  z  -1  1  1  origin  0.0    0.0    0.0
+Lattice spacing in x,y,z = 6.6789423 5.7841337 7.0840881
+region          sim_region  block  -2  ${lblock}  0  ${lblock}  0  ${lblock}  units  lattice #### "-2" for x_lo -> To have periodicity along x for the given orientation; Change it to check the periodicity
+region          sim_region  block  -2  10  0  ${lblock}  0  ${lblock}  units  lattice 
+region          sim_region  block  -2  10  0  10  0  ${lblock}  units  lattice 
+region          sim_region  block  -2  10  0  10  0  10  units  lattice 
+create_box      1  sim_region
+Created orthogonal box = (-13.357885 0 0) to (66.789423 57.841337 70.840881)
+  1 by 1 by 1 MPI processor grid
+create_atoms	1  box
+Created 19840 atoms
+  using lattice units in orthogonal box = (-13.357885 0 -0.0070840881) to (66.789423 57.841337 70.847965)
+  create_atoms CPU = 0.006 seconds
+
+#Provide potential
+pair_style      eam/alloy ### --> TYPE OF POTENTIAL (eam (OR) eam/alloy)
+pair_coeff      *  *  CuAg.eam.alloy Ag  ### POTENTIAL FILENAME
+
+neighbor	2.0  bin
+neigh_modify    delay  3
+
+
+#--------------Define Settings-------------------
+variable   	natoms equal "count(all)"
+variable   	ecoh equal "pe/v_natoms"
+variable   	latt equal "lx/v_lblock"
+variable 	teng equal "etotal"
+
+thermo_style	custom step pe etotal pxx  pyy  pzz pxy pyz pxz fnorm lx  ly  lz v_ecoh v_latt
+
+thermo		10
+
+#dump		drelax  all  atom  1000 dump.atom.*
+
+
+#------------- Run minimization ---------------
+#fix 		1 all box/relax x 0.0 z 0.0 xz 0.0
+min_style	cg
+minimize        0.0 1.0e-10 100000 100000
+Switching to 'neigh_modify every 1 delay 0 check yes' setting during minimization
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 7.995011
+  ghost atom cutoff = 7.995011
+  binsize = 3.9975055, bins = 21 15 18
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton off
+      pair build: half/bin/newtoff
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 14.55 | 14.55 | 14.55 Mbytes
+   Step         PotEng         TotEng          Pxx            Pyy            Pzz            Pxy            Pyz            Pxz           Fnorm            Lx             Ly             Lz           v_ecoh         v_latt    
+         0  -56041.601     -56041.601     -3496.9599     -3496.9599     -1966.1476     -1.6452486e-12  1.7594549e-12  4.1060607e-11  6.218827       80.147307      57.841337      70.855049     -2.8246775      8.0147307    
+        10  -56045.038     -56045.038     -2691.5189     -2691.5189     -246.34183     -1.6982286e-12  3.1618583e-13  2.2083492e-11  0.096362706    80.147307      57.841337      70.855049     -2.8248507      8.0147307    
+        20  -56045.044     -56045.044     -2609.0213     -2609.0213     -59.688721     -1.647549e-12  -2.0697774e-12  2.5833612e-11  0.031737794    80.147307      57.841337      70.855049     -2.824851       8.0147307    
+        30  -56045.044     -56045.044     -2591.3619     -2591.3619     -19.473779     -1.7428784e-12 -3.1469579e-12  2.0201014e-11  0.0074381263   80.147307      57.841337      70.855049     -2.824851       8.0147307    
+        40  -56045.044     -56045.044     -2585.32       -2585.32       -5.6751337     -7.6192003e-13 -3.9182418e-13  1.8101153e-11  0.0017649488   80.147307      57.841337      70.855049     -2.824851       8.0147307    
+        47  -56045.044     -56045.044     -2583.4546     -2583.4546     -1.4499544     -4.4888819e-13 -2.3568968e-12  1.5404479e-11  0.00067629976  80.147307      57.841337      70.855049     -2.824851       8.0147307    
+Loop time of 3.82183 on 1 procs for 47 steps with 19840 atoms
+
+100.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = linesearch alpha is zero
+  Energy initial, next-to-last, final = 
+     -56041.6013504905  -56045.0440251867  -56045.0440251867
+  Force two-norm initial, final = 6.218827 0.00067629976
+  Force max component initial, final = 0.12627393 9.1822845e-06
+  Final line search alpha, max atom move = 0.015625 1.434732e-07
+  Iterations, force evaluations = 47 104
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 3.7864     | 3.7864     | 3.7864     |   0.0 | 99.07
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.0031685  | 0.0031685  | 0.0031685  |   0.0 |  0.08
+Output  | 0.00081925 | 0.00081925 | 0.00081925 |   0.0 |  0.02
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.03144    |            |       |  0.82
+
+Nlocal:          19840 ave       19840 max       19840 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:          10459 ave       10459 max       10459 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    1.39024e+06 ave 1.39024e+06 max 1.39024e+06 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 1390238
+Ave neighs/atom = 70.07248
+Neighbor list builds = 0
+Dangerous builds = 0
+
+
+# -------- To displace atoms's positions in case atom reaches a saddle position -----------
+#displace_atoms 	all random ${atomjiggle} ${atomjiggle} ${atomjiggle} 87287 units box
+#minimize        0.0 1.0e-10 100000 100000
+
+
+print "Total energy of the slab (eV) = ${teng};"
+Total energy of the slab (eV) = -56045.0440251867;
+print "Number of atoms = ${natoms};"
+Number of atoms = 19840;
+print "Lattice constant (Angstoms) = ${latt};"
+Lattice constant (Angstoms) = 8.01473072341771;
+print "Cohesive energy (eV) = ${ecoh};"
+Cohesive energy (eV) = -2.82485100933401;
+##
+
+# Bulk cohesive energy per atom
+variable Ecoh_bulk equal -2.84999997472111
+
+# Calculate surface area
+variable area equal lx*ly
+
+# Calculate surface energy (fully correct LAMMPS syntax)
+variable surface_energy equal (v_teng-v_Ecoh_bulk*v_natoms)/(2*v_area)
+
+# Output everything
+print "Surface area (A^2) = ${area};"
+Surface area (A^2) = 4635.82738798652;
+print "Surface energy (eV/A^2) = ${surface_energy};"
+Surface energy (eV/A^2) = 0.053815147925173;
+
+Total wall time: 0:00:04
